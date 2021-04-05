@@ -1,0 +1,12 @@
+all: dbaunix
+
+CLIDEP=DBA.H STDC.H TABLE.C
+
+clean:
+	rm -f dbaunix *.o
+
+dbaunix: DBAIFACE.C $(CLIDEP)
+	gcc -x c -g -DSTDC -o $@ $<
+
+test:
+	./dbaunix <TEST/NOOP.DBA | grep "DBA/86 v0.0"

@@ -1,0 +1,32 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build_dos:
+    runs-on: ubuntu-latest
+    container:
+      image: mcejp/open-watcom-v2:2021-04-02-ubuntu
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      shell: bash
+      run: |
+        make -f Makefile.286 all
+
+        # Tests are a little bit more tricky, because DOSEMU *really* doesn't like to run as root
+        # In effect, we just `su` to a dummy user, and do our business and usual
+        su - dosemu -c "make -C `pwd` -f Makefile.286 test"
+
+  build_linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      shell: bash
+      run: |
+        make -f Makefile.unix all test

@@ -1,0 +1,18 @@
+all: DBA286.EXE
+
+clean:
+	rm -f *.o *.EXE
+
+# linker: https://openwatcom.users.c-cpp.narkive.com/EkKbhk5k/newbie-problem-linking-fails
+# COM: https://wiki.osdev.org/Watcom + https://stackoverflow.com/questions/46408334/com-executables-with-open-watcom
+
+DBA286.EXE: DBAIFACE.o
+	wcl -q -bt=dos -fe=$@ $^
+
+DBAIFACE.o: DBAIFACE.C DBA.H DOS_OW.H TABLE.C
+	wcc -q -0 -bt=dos -fo=$@ $<
+
+test:
+	# TOOD: pre-check .DBA file to prevent test getting stuck?
+	# (since the concept of EOF in a piped input is foreign to DOS...)
+	dosemu -dumb --Fdrive_c . -E "DBA286.EXE <TEST/NOOP.DBA" | grep "DBA/86 v0.0"
